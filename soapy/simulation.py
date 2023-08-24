@@ -86,7 +86,7 @@ except ImportError:
 import aotools
 
 #sim imports
-from . import atmosphere, logger, wfs, DM, reconstruction, scienceinstrument, confParse, interp
+from . import atmosphere, logger, wfs, DM, reconstruction, scienceinstrument, confParse, interp, TipTiltError
 
 import shutil
 
@@ -183,6 +183,7 @@ class Sim(object):
         self.mask = make_mask(self.config)
 
         self.atmos = atmosphere.atmos(self.config)
+        self.tte   = TipTiltError.TipTiltError("/home/cameron/Documents/projects/SOAPY_TTError/soapy/conf/TTError.yaml")
 
         # Find if WFSs should each have own process
         if self.config.sim.wfsMP:
@@ -542,7 +543,12 @@ class Sim(object):
         """
         # Get next phase screens
         t = time.time()
-        self.scrns = self.atmos.moveScrns()
+        n = self.atmos.scrns[0].shape[0]
+        Z   = aotools.zernikeArray(3,n) # TODO: Define this somewhere else as a constant so we arn't repeating calculations every frame
+        Tip,Tilt = self.tte.updateTT() # TODO: Should this take t as an argument so it is synchronised with the rest of the loop?
+        TT = Tip*Z[1]+ Tilt*Z[2]
+
+        self.scrns = self.atmos.moveScrns() + TT 
         self.Tatmos += time.time()-t
 
         # Run Loop...

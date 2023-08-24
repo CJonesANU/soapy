@@ -3,6 +3,12 @@
 The python AO simulation startup script.
 either starts a command line or gui version of the simulation.
 '''
+
+print("----------------------\n"*3)
+print("WELCOME TO CAMERONS EDIT OF SOAPY")
+print("This is a fork of the original soapy project")
+print("Have fun!")
+print("----------------------\n"*3)
 import sys
 import os
 import matplotlib.pyplot as plt
@@ -111,6 +117,7 @@ if __name__=="__main__":
     soapy.logger.setLoggingLevel(verbosity)
 
     #init sim with conf file
+    print("GRABBING CONFIG")
     sim = soapy.Sim(configFile)
     sim.config.sim.verbosity = args.verbosity
 
