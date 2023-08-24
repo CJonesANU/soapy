@@ -14,23 +14,34 @@ import aotools
 import time
 
 class TipTiltError(object):
-    def __init__(self, config_path):
-        print("Initializing TipTiltError")
-        # Read TelVar, TelFreq, FSMVar, FSMSamp from config file
-        # Open config yaml file
-        print("Reading config file: ", config_path)
-        with open(config_path, 'r') as yaml_file:
-            config = yaml.safe_load(yaml_file)
+    def __init__(self, soapyConfig):
+        # print("Initializing TipTiltError")
+        # # Read TelVar, TelFreq, FSMVar, FSMSamp from config file
+        # # Open config yaml file
+        # print("Reading config file: ", config_path)
+        # with open(config_path, 'r') as yaml_file:
+        #     config = yaml.safe_load(yaml_file)
 
-        # Access the parameters using dictionary-like syntax
-        self.telVar  = config['TelVar']
-        self.telFreq = config['TelFreq']
-        self.fsmVar  = config['FSMVar']
-        self.fsmSamp = config['FSMFreq']
+        # # Access the parameters using dictionary-like syntax
+        # self.telVar  = config['TelVar']
+        # self.telFreq = config['TelFreq']
+        # self.fsmVar  = config['FSMVar']
+        # self.fsmSamp = config['FSMFreq']
+        # self.time = time.time()
+        # self.telError = 0
+        # self.fsmError = 0
+        # print("Done Initializing TipTiltError")
+
+        self.soapyConfig = soapyConfig # This is a confParse.py:YAML_Configurator object
+        self.telVar  = self.soapyConfig.tte.telVar # THIS Calls the confParse attributes
+        self.telFreq = self.soapyConfig.tte.telFreq
+        self.fsmVar  = self.soapyConfig.tte.fsmVar
+        self.fsmFreq = self.soapyConfig.tte.fsmFreq
         self.time = time.time()
         self.telError = 0
         self.fsmError = 0
-        print("Done Initializing TipTiltError")
+
+
 
     def __str__(self):
         return "TelVar: " + str(self.telVar) + "\nTelFreq: " + str(self.telFreq) + "\nFSMVar: " + str(self.fsmVar) + "\nFSMFreq: " + str(self.fsmSamp)
@@ -61,7 +72,7 @@ class TipTiltError(object):
         if Delta > 1./self.telFreq:
             # Update the TelVar
             self.sampleTel()
-        if Delta > 1./self.fsmSamp:
+        if Delta > 1./self.fsmFreq:
             # Update the FSMVar
             self.sampleFSM()
         return self.telError + self.fsmError

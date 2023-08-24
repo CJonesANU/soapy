@@ -1,36 +1,35 @@
-simName: OCGS_closed
-pupilSize: 128
+simName: OCGS
+pupilSize: 100
 nGS: 1
 nDM: 1
 nSci: 1
-nIters: 200
-loopTime: 0.033
-threads: 12
+nIters: 5
+loopTime: 0.0025
+threads: 4
 
 verbosity: 2
 
-saveCMat: True
+saveCMat: False
 saveSlopes: True
-saveDmCommands:   True
+saveDmCommands:   False
 saveLgsPsf: False
 saveSciPsf: True
 
 
 Atmosphere:
   scrnNo: 1
-  scrnHeights: [20000]
-  scrnStrengths: [1.]
-  windDirs: [45]
-  windSpeeds: [15]
-  wholeScrnSize: 256
-  r0: 0.01
+  scrnHeights: [0]
+  scrnStrengths: [1]
+  windDirs: [0]
+  windSpeeds: [10]
+  wholeScrnSize: 2048
+  r0: 100
   L0: [10]
   infinite: True
-  subHarmonics: True
 
 
 Telescope:
-  telDiam: 0.7
+  telDiam: 8
   obsDiam: 0
   mask: circle
 
@@ -38,17 +37,19 @@ WFS:
   0:
     type: ShackHartmann
     GSPosition: [0, 0]
+    GSHeight: 0
+    GSMag: 8
     nxSubaps: 1
     pxlsPerSubap: 2
-    subapFOV: 240
-    subapFieldStop: True
-    wavelength: 1.55E-6
+    subapFOV: 2.5
+    wavelength: 1550e-9
 
 DM:
   0:
     type: TT
     closed: True
-    iMatValue: 0.25
+    iMatValue: 0.26
+
 
 Reconstructor:
   type: MVM
@@ -58,12 +59,14 @@ Reconstructor:
 Science:
   0:
     position: [0, 0]
-    FOV: 30
-    wavelength: 1.55e-6
-    pxls: 640
+    FOV: 1.0
+    wavelength: 1550e-9
+    pxls: 64
 
 TTError:
-  telVar: 1000
+  telVar: 0
   telFreq: 0.1
-  fsmVar: 1000
+  fsmVar: 0
   fsmFreq: 20
+
+

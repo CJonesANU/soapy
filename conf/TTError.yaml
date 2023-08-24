@@ -1,4 +1,5 @@
-TelVar: 1000
-TelFreq: 0.1
-FSMVar: 10
-FSMFreq: 200
+TTError:
+  telVar: 1000
+  telFreq: 0.1
+  fsmVar: 1000
+  fsmFreq: 20

@@ -5,7 +5,7 @@ nDM: 1
 nSci: 1
 nIters: 200
 loopTime: 0.033
-threads: 12
+threads: 6
 
 verbosity: 2
 
@@ -63,7 +63,7 @@ Science:
     pxls: 640
 
 TTError:
-  telVar: 1000
+  telVar: 10
   telFreq: 0.1
-  fsmVar: 1000
+  fsmVar: 10
   fsmFreq: 20

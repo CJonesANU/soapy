@@ -6,10 +6,12 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 # Create a simulation object
-configFile = "./conf/OCGS.yaml"
+configFile = "/home/cameron/Documents/projects/SOAPY_TTError/soapy-1/conf/OCGS.yaml"
 sim = soapy.Sim(configFile)
 # init the simulation
 sim.aoinit()
+
+sim.config.sim.nIters = 1
 sim.makeIMat()
 sim.aoloop()
 
@@ -18,6 +20,9 @@ sim.aoloop()
 fig, ax = plt.subplots(1,2)
 # Plot Phase Screen Used
 ax[0].imshow(sim.scrns[0])
+ax[0].set_title("Phase Screen Used")
 # Show Science Camera Image 
 ax[1].imshow(sim.sciImgs[0])
+ax[1].set_title("Science Camera Image")
+# Add color bar
 plt.show()

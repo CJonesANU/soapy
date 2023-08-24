@@ -114,6 +114,10 @@ class Sim(object):
     """
 
     def __init__(self, configFile=None):
+        print("===============================")
+        print("Soapy TTError Injection")
+        print("Modified by Cameron Jones")
+        print("===============================")
         if not configFile:
             configFile = "conf/testConf.py"
 
@@ -183,7 +187,8 @@ class Sim(object):
         self.mask = make_mask(self.config)
 
         self.atmos = atmosphere.atmos(self.config)
-        self.tte   = TipTiltError.TipTiltError("/home/cameron/Documents/projects/SOAPY_TTError/soapy/conf/TTError.yaml")
+        # self.tte   = TipTiltError.TipTiltError("/home/cameron/Documents/projects/SOAPY_TTError/soapy/conf/TTError.yaml")
+        self.tte = TipTiltError.TipTiltError(self.config)
 
         # Find if WFSs should each have own process
         if self.config.sim.wfsMP:

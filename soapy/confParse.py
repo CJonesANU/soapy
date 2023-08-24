@@ -78,6 +78,7 @@ class PY_Configurator(object):
 
         self.sim = SimConfig()
         self.atmos = AtmosConfig()
+        self.tte = TTErrorConfig()
         self.tel = TelConfig()
         self.recon = ReconstructorConfig()
 
@@ -106,6 +107,9 @@ class PY_Configurator(object):
 
         logger.debug("\nLoad Telescope Params...")
         self.tel.loadParams(self.configDict["Telescope"])
+
+        logger.debug("\nLoad TT Error Params...")
+        self.tte.loadParams(self.configDict["TTError"])
 
         for nWfs in range(self.sim.nGS):
             logger.debug("Load LGS {} Params".format(nWfs))
@@ -243,6 +247,7 @@ class PY_Configurator(object):
         objs = {'Sim': dict(self.sim),
                 'Atmosphere': dict(self.atmos),
                 'Telescope': dict(self.tel),
+                'TTError': dict(self.tte),
                 'Reconstructor': dict(self.recon),
                 'WFS': {},
                 'DM': {},
@@ -301,6 +306,9 @@ class YAML_Configurator(PY_Configurator):
 
         logger.debug("\nLoad Telescope Params...")
         self.tel.loadParams(self.configDict["Telescope"])
+
+        logger.debug("\nLoad TT Error Params...")
+        self.tte.loadParams(self.configDict["TTError"])
 
         for nWfs in range(self.sim.nGS):
             logger.debug("Load WFS {} Params...".format(nWfs))
@@ -872,6 +880,39 @@ class TelConfig(ConfigObj):
     for p in optionalParams:
         allowedAttrs.append(p[0])
 
+class TTErrorConfig(ConfigObj):
+    """
+        Configuration parameters characterising the TipTiltError Sources. These should be held in the ``TTError`` group in the parameter file.
+
+    Required:
+        =============   ===================
+        **Parameter**   **Description**
+        -------------   -------------------
+        ``TelVar``      float: TelescopePointing Variance is arcsecs^2
+        ``TelFreq``     float: TelescopePointing Frequency in Hz
+        ``FSMVar``      float: FSM Variance in arcsecs^2
+        ``FSMFreq``     float: FSM Frequency in Hz
+        =============   ===================
+    Optional:
+        ==================  =================================   ===========
+        **Parameter**       **Description**                     **Default**
+        ------------------  ---------------------------------   -----------
+        ==================  =================================   ===========
+
+    """
+
+
+    requiredParams = ["telVar",
+                      "telFreq",
+                      "fsmVar",
+                      "fsmFreq"]
+
+    optionalParams = [ ]
+    calculatedParams = [ ]
+
+    allowedAttrs = copy.copy(requiredParams + calculatedParams + CONFIG_ATTRIBUTES)
+    for p in optionalParams:
+        allowedAttrs.append(p[0])
 
 class LgsConfig(ConfigObj):
     """
