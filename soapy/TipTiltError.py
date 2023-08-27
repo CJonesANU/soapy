@@ -13,6 +13,7 @@ import yaml
 import aotools
 import time
 
+
 class TipTiltError(object):
     def __init__(self, soapyConfig):
         # print("Initializing TipTiltError")
@@ -37,9 +38,9 @@ class TipTiltError(object):
         self.telFreq = self.soapyConfig.tte.telFreq
         self.fsmVar  = self.soapyConfig.tte.fsmVar
         self.fsmFreq = self.soapyConfig.tte.fsmFreq
-        self.time = time.time()
-        self.telError = 0
-        self.fsmError = 0
+        self.time = time.time()-10 #Hack to get everythging to run the first time
+        self.telError = (0,0)
+        self.fsmError = (0,0)
 
 
 
@@ -61,12 +62,12 @@ class TipTiltError(object):
         # Get time now
         now = time.time()
         # Calculate the time delta
-        delta = now - self.time
+        delta = np.abs(now - self.time)
         # Update the time
         self.time = now
         return delta
-    
-    def updateTT(self):
+
+    def updateTT(self): # Update both at the same time // maybe not so useful
         # Check if it is time to update the TT error
         Delta = self.timeDelta()
         if Delta > 1./self.telFreq:
@@ -76,6 +77,27 @@ class TipTiltError(object):
             # Update the FSMVar
             self.sampleFSM()
         return self.telError + self.fsmError
+
+    def updateFSM(self):
+        Delta = self.timeDelta()
+        if Delta > 1./self.fsmFreq:
+            # Update the FSMVar
+            self.sampleFSM()
+            print("UPDATED FSMError: ", self.fsmError)
+            return self.fsmError
+        else:
+            print("FSMError: ", self.fsmError)
+            return self.fsmError
+    
+    def updateTel(self):
+        Delta = self.timeDelta()
+        if Delta > 1./self.telFreq:
+            # Update the TelVar
+            self.sampleTel()
+            return self.telError
+        else:
+            return self.telError
+        
 
     
     

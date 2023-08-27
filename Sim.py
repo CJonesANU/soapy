@@ -9,13 +9,11 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 # Create a simulation object
-configFile = "/home/cameron/Documents/projects/SOAPY_TTError/soapy-1/conf/OCGS.yaml"
+configFile = "/home/cameron/Documents/projects/SOAPY_TTError/soapy-1/conf/OCGSSMF.yaml"
 sim = soapy.Sim(configFile)
 # init the simulation
 sim.aoinit()
 
-# Set number of iterations
-sim.config.sim.nIters = 35
 
 # Create array to store Strehl Ratios
 strehlRatios = np.zeros(sim.config.sim.nIters)
@@ -24,13 +22,18 @@ strehlRatios = np.zeros(sim.config.sim.nIters)
 sim.makeIMat()
 sim.aoloop()
 
-print("Number of Images: ", len(sim.sciImgs))
+longStrehl = sim.longStrehl[0][0:sim.config.sim.nIters]
+instStrehl = sim.instStrehl[0][0:sim.config.sim.nIters]
 
-# Analyse Strehl Ratio for Science Camera Images
-for i in range(len(sim.sciImgs)):
-    strehlRatios[i] = sim.sciImgs[i].max()/sim.sciImgs[i].mean()
-plt.plot(strehlRatios)
+# Plot Strehl Ratio vs Iteration
+plt.plot(longStrehl, label="Long Exposure")
+plt.plot(instStrehl, label="Instantaneous")
 plt.title("Strehl Ratio vs Iteration")
+plt.legend()
 plt.xlabel("Iteration")
 plt.ylabel("Strehl Ratio")
+plt.show(block=False)
+
+plt.imshow(sim.sciImgs[0])
+plt.title("Science Image")
 plt.show()

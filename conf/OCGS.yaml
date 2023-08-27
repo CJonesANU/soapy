@@ -3,7 +3,7 @@ pupilSize: 128
 nGS: 1
 nDM: 1
 nSci: 1
-nIters: 200
+nIters: 35
 loopTime: 0.033
 threads: 12
 
@@ -64,6 +64,6 @@ Science:
 
 TTError:
   telVar: 1000
-  telFreq: 0.1
+  telFreq: 0.01
   fsmVar: 1000
-  fsmFreq: 20
+  fsmFreq: 0.01

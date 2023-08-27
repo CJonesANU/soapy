@@ -550,10 +550,11 @@ class Sim(object):
         t = time.time()
         n = self.atmos.scrns[0].shape[0]
         Z   = aotools.zernikeArray(3,n) # TODO: Define this somewhere else as a constant so we arn't repeating calculations every frame
-        Tip,Tilt = self.tte.updateTT() # TODO: Should this take t as an argument so it is synchronised with the rest of the loop?
+        Tip,Tilt = self.tte.updateTel() # TODO: Should this take t as an argument so it is synchronised with the rest of the loop?
         TT = Tip*Z[1]+ Tilt*Z[2]
 
-        self.scrns = self.atmos.moveScrns() + TT 
+        self.scrns = self.atmos.moveScrns() 
+        self.scrns[0] += TT 
         self.Tatmos += time.time()-t
 
         # Run Loop...
@@ -582,6 +583,11 @@ class Sim(object):
 
         # Pass whole combined DM shapes to science target
         self.combinedCorrection = self.open_correction + self.closed_correction
+
+
+        Tip,Tilt = self.tte.updateFSM() # TODO: Should this take t as an argument so it is synchronised with the rest of the loop?
+        TT = Tip*Z[1]+ Tilt*Z[2]
+        self.scrns[0] += TT  # Add the FSM error AFTER all correction is applied, but before SciCams are run
 
         self.runSciCams(self.combinedCorrection)
 
