@@ -114,10 +114,10 @@ class Sim(object):
     """
 
     def __init__(self, configFile=None):
-        print("===============================")
-        print("Soapy TTError Injection")
-        print("Modified by Cameron Jones")
-        print("===============================")
+        # print("===============================")
+        # print("Soapy TTError Injection")
+        # print("Modified by Cameron Jones")
+        # print("===============================")
         if not configFile:
             configFile = "conf/testConf.py"
 
@@ -548,13 +548,15 @@ class Sim(object):
         """
         # Get next phase screens
         t = time.time()
-        n = self.atmos.scrns[0].shape[0]
-        Z   = aotools.zernikeArray(3,n) # TODO: Define this somewhere else as a constant so we arn't repeating calculations every frame
+        Z1,Z2 = self.ZernikeModes[1:3]
         Tip,Tilt = self.tte.updateTel() # TODO: Should this take t as an argument so it is synchronised with the rest of the loop?
-        TT = Tip*Z[1]+ Tilt*Z[2]
+        telTT = Tip*Z1+ Tilt*Z2
+        Tip,Tilt = self.tte.updateTransmit()
+        transmitTT = Tip*Z1+ Tilt*Z2
 
         self.scrns = self.atmos.moveScrns() 
-        self.scrns[0] += TT 
+        self.scrns[0] += telTT 
+        self.scrns[-1] += transmitTT
         self.Tatmos += time.time()-t
 
         # Run Loop...
@@ -573,7 +575,11 @@ class Sim(object):
         self.closed_correction = self.runDM(
                 self.dmCommands, closed=True)
 
+        Tip,Tilt = self.tte.updateFSM() # TODO: Should this take t as an argument so it is synchronised with the rest of the loop?
+        fsmTT = Tip*Z1+ Tilt*Z2
+        self.scrns[0] += fsmTT  # Add the FSM error AFTER all correction is applied, but before SciCams are run
         # Run WFS, with closed loop DM shape applied
+
         self.slopes = self.runWfs(dmShape=self.closed_correction,
                                   loopIter=self.iters)
 
@@ -585,9 +591,6 @@ class Sim(object):
         self.combinedCorrection = self.open_correction + self.closed_correction
 
 
-        Tip,Tilt = self.tte.updateFSM() # TODO: Should this take t as an argument so it is synchronised with the rest of the loop?
-        TT = Tip*Z[1]+ Tilt*Z[2]
-        self.scrns[0] += TT  # Add the FSM error AFTER all correction is applied, but before SciCams are run
 
         self.runSciCams(self.combinedCorrection)
 
@@ -609,6 +612,12 @@ class Sim(object):
         Runs a WFS iteration, reconstructs the phase, runs DMs and finally the science cameras. Also makes some nice output to the console and can add data to the Queue for the GUI if it has been requested. Repeats for nIters.
         """
 
+        # Define Zernike Modes for use in TTError to reduce redundant calculations
+        logger.info("Calculating Zernike Modes")
+        n = self.atmos.scrns[0].shape[0]
+        self.ZernikeModes   = aotools.zernikeArray(3,n) 
+
+        logger.info("Starting AO Loop...")
         self.go = True
         try:
             while self.iters < self.config.sim.nIters:

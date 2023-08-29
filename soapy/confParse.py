@@ -892,6 +892,8 @@ class TTErrorConfig(ConfigObj):
         ``TelFreq``     float: TelescopePointing Frequency in Hz
         ``FSMVar``      float: FSM Variance in arcsecs^2
         ``FSMFreq``     float: FSM Frequency in Hz
+        ``TransmitVar`` float: Transmitter Pointing Variance
+        ``TransmitterFreq`` float: Transmitter pointing error bandwidth
         =============   ===================
     Optional:
         ==================  =================================   ===========
@@ -905,7 +907,10 @@ class TTErrorConfig(ConfigObj):
     requiredParams = ["telVar",
                       "telFreq",
                       "fsmVar",
-                      "fsmFreq"]
+                      "fsmFreq",
+                      "transmitVar",
+                      "transmitFreq"]
+
 
     optionalParams = [ ]
     calculatedParams = [ ]
