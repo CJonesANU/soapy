@@ -1028,6 +1028,9 @@ class DmConfig(ConfigObj):
         ``closed``           bool:Is DM closed loop of WFS?\**    ``True``
         ``iMatValue``        float: Value to push actuators
                              when making iMat                    ``10``
+        ``maxStroke``        float: Maximum stroke of DM, if     ``None``
+                             ``None`` then the maximum stroke
+                             is unbounded.         
         ``wfs``              int: which Wfs to take iMat and
                              use to correct for.                 ``0``
         ``rotation``         float: A DM rotation with respect
@@ -1065,6 +1068,7 @@ class DmConfig(ConfigObj):
         ("gain", 0.6),
         ("closed", True),
         ("iMatValue", 10),
+        ("maxStroke", None),
         ("wfs", None),
         ("rotation", 0),
         ("interpOrder", 2),

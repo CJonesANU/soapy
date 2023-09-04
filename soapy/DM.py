@@ -60,7 +60,7 @@ except NameError:
     xrange = range
 
 class DM(object):
-    """
+    """.\\2023-08-31_11-27-41_TelVarFSMResponse\\TelVarianceResults
     The base DM class
 
     This class is intended to be inherited by other DM classes which describe
@@ -90,6 +90,12 @@ class DM(object):
         self.diameter = self.config.diameter
         self.telescope_diameter = self.soapy_config.tel.telDiam
 
+        self.maxStroke = self.config.maxStroke
+        # if self.maxStroke:
+        #     print("================================")
+        #     print("Max Stroke COnfigured")
+        #     print("Maximum Stroke: ", self.maxStroke)
+        #     print("================================")
         self.wfss = wfss
 
         # If supplied use the mask
@@ -196,7 +202,27 @@ class DM(object):
 
         return self.dm_screen
 
+    def inRangeOrCoerce(self, actCoeffs):
+        """
+        Checks that the actuator commands are within the range of the DM
+
+        Parameters:
+            actCoeffs (ndarray): The actuator commands
+
+        Returns:
+            ndarray: The actuator commands, coerced to be within the range of the DM
+        """
+        if self.maxStroke:
+            actCoeffs[actCoeffs > self.maxStroke] = self.maxStroke
+            actCoeffs[actCoeffs < -self.maxStroke] = -self.maxStroke
+
+        return actCoeffs
+
     def makeDMFrame(self, actCoeffs):
+
+        if self.maxStroke: # i.e. only do it is maxStroke is NOT None
+            actCoeffs = self.inRangeOrCoerce(actCoeffs)
+
         dm_shape = (self.iMatShapes.T*actCoeffs.T).T.sum(0)
 
         return dm_shape
