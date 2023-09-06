@@ -259,9 +259,6 @@ class Sim(object):
 
         # # Init Telescope COntroller
         logger.info("Initialising Telescope Controller...")
-        # WORKS TO IMPORT BASE CLASS
-        # self.telCon = TelescopeControl.telescopeController(self.config)
-
         # Import child class
         try:
             if self.config.telCon.loadModule:
