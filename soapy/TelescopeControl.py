@@ -37,7 +37,7 @@ class telescopeController(object):
     def __init__(self,soapyConfig):
         print("INIT BASE")
         self.soapyConfig = soapyConfig
-        print("TEL CONTROL CONFIG")
+        # print("TEL CONTROL CONFIG")
         # print(self.soapyConfig.telCon)L
         self.controlFreq = self.soapyConfig.telCon.controlFreq
 

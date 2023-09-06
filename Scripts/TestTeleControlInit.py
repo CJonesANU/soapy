@@ -8,6 +8,14 @@ sim.config.sim.verbosity = 3
 
 
 print("STARTING AOINIT")
+
+print("=========================\n"*3)
+print(sim.config.telCon.type)
+print("=========================\n"*3)
+
+
 sim.aoinit()
+sim.makeIMat()
+sim.aoloop()
 
 # print(sim.config.telControl.type)

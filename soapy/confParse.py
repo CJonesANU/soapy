@@ -251,6 +251,7 @@ class PY_Configurator(object):
         objs = {'Sim': dict(self.sim),
                 'Atmosphere': dict(self.atmos),
                 'Telescope': dict(self.tel),
+                'telControl': dict(self.telCon),
                 'TTError': dict(self.tte),
                 'Reconstructor': dict(self.recon),
                 'WFS': {},
@@ -310,6 +311,9 @@ class YAML_Configurator(PY_Configurator):
 
         logger.debug("\nLoad Telescope Params...")
         self.tel.loadParams(self.configDict["Telescope"])
+
+        logger.debug("\nLoad Telescope Control Params...")
+        self.telCon.loadParams(self.configDict["TelescopeControl"])
 
         logger.debug("\nLoad TT Error Params...")
         self.tte.loadParams(self.configDict["TTError"])
@@ -925,64 +929,31 @@ class TTErrorConfig(ConfigObj):
 
 class telControlConfig(ConfigObj):
     """
-    Configuration parameters characterising Science Cameras.
+    Configuration parameters characterising telescope Controller.
 
-    These should be held in the ``Science`` of the parameter file.
-    Each Science target is created seperately with an integer index.
-    Any entries above ``sim.nSci`` will be ignored.
+    These should be held in the ``TelescopeControl`` of the parameter file.
 
     Required:
         ==================      ============================================
         **Parameter**           **Description**
         ------------------      --------------------------------------------
-        ``position``            tuple: The position of the science camera
-                                in the field in arc-seconds
-        ``FOV``                 float: The field of fiew of the science
-                                detector in arc-seconds
-        ``wavelength``          float: The wavelength of the science
-                                detector light
-        ``pxls``                int: Number of pixels in the science detector
+
         ==================      ============================================
 
     Optional:
         ==================== =================================   ===========
         **Parameter**        **Description**                     **Default**
         -------------------- ---------------------------------   -----------
-        ``pxlScale``         float: Pixel scale of science 
-                             camera, in arcseconds. If set, 
-                             overwrites ``FOV``.                 ``None``
-        ``type``             string: Type of science camera
-                             This must the name of a class
-                             in the ``SCI`` module.              ``PSF``
-        ``fftOversamp``      int: Multiplied by the number of
-                             of phase points required for FOV
-                             to increase fidelity from FFT.      ``2``
-        ``fftwThreads``      int: number of threads for fftw
-                             to use. If ``0``, will use
-                             system processor number.             ``1``
-        ``fftwFlag``         str: Flag to pass to FFTW
-                             when preparing plan.                 ``FFTW_MEASURE``
-         ``height``          float: Altitude of the object.
-                             0 denotes infinity.                  ``0``
-        ``propagationMode``  str: Mode of light propogation
-                             from object. Can be "Physical" or
-                             "Geometric".                        ``"Geometric"``
-        ``propagationDir``   str: Direction to propagatate.
-                             Either ``up`` or ``down``           ``down``
-        ``instStrehlWithTT`` bool: Whether or not to include
-                             tip/tilt in instantaneous Strehl
-                             calculations.                       ``False``
-        ``loadModule``       str: External module to load,       ``None``
-                             where the specified science 
-                             object is stored.  
+
         ==================== =================================   ===========
 
     """
 
 
-    requiredParams = [  "position",
-                        "wavelength",
-                        "pxls",
+    requiredParams = [  "type",
+                        "controlFreq",
+                        "range",
+                        "slewRate"
                         ]
     optionalParams = [  ("pxlScale", None),
                         ("FOV", None),
@@ -1005,19 +976,7 @@ class telControlConfig(ConfigObj):
         allowedAttrs.append(p[0])
 
     def calcParams(self):
-        # Set some parameters to correct type
-        self.position = numpy.array(self.position)
-        self.wavelength = float(self.wavelength)
-
-
-        if (self.pxlScale is None) and (self.FOV is None):
-            raise ConfigurationError("Must supply either FOV or pxlScale for SCI")
-
-        if (self.pxlScale is not None) and ((self.pxlScale * self.pxls) != self.FOV):
-            logger.warning("Overriding sci FOV with pxlscale")
-            self.FOV = self.pxlScale * self.pxls
-        else:
-            self.pxlScale = float(self.FOV)/self.pxls
+        pass
                        
 
 

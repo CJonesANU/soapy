@@ -258,8 +258,9 @@ class Sim(object):
         logger.info("%d total DM Actuators"%self.config.sim.totalActs)
 
         # # Init Telescope COntroller
-        # logger.info("Initialising Telescope Controller...")
+        logger.info("Initialising Telescope Controller...")
 
+        self.telCon = TelescopeControl.telescopeController(self.config)
         # telCon_lib = importlib.import_module(self.config.telCon.loadModule)
         # # print(TelescopeControl.telescopeController)
         # telConObj = getattr(telCon_lib, self.config.telCon.type)

@@ -65,4 +65,7 @@ target/
 
 .idea/
 .vscode/
+Data/*
 Data/
+./Data
+./Data/*
