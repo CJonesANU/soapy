@@ -302,8 +302,8 @@ class Reconstructor(object):
             if callback != None:
                 callback()
 
-            logger.statusMessage(i, dm.n_acts,
-                                 "Generating {} Actuator DM iMat".format(dm.n_acts))
+            # logger.statusMessage(i, dm.n_acts,
+            #                      "Generating {} Actuator DM iMat".format(dm.n_acts))
 
         logger.info("Checking for redundant actuators...")
         # Now check tath each actuator actually does something on a WFS.
@@ -479,7 +479,7 @@ class MVM_SeparateDMs(Reconstructor):
             for wfs_index in [dm.dmConfig.wfs]:
                 wfs = self.wfss[wfs_index]
                 wfs_imat = self.get_dm_imat(dm_index, wfs_index)
-                print("DM: {}, WFS: {}".format(dm_index, wfs_index))
+                # print("DM: {}, WFS: {}".format(dm_index, wfs_index))
                 dm_interaction_matrix[:, n_wfs_measurement:n_wfs_measurement + wfs.n_measurements] = wfs_imat
 
             dm_control_matrx = numpy.linalg.pinv(dm_interaction_matrix, dm.dmConfig.svdConditioning)

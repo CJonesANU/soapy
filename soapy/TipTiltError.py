@@ -36,6 +36,10 @@ class TipTiltError(object):
 
     def sampleTel(self):
         # Sample the TelVar
+        # Random Normal
+        # self.telError = np.random.normal(0, self.telVar,2)
+
+        # Random Walk
         self.telError += np.random.normal(0, self.telVar,2)
         return
     

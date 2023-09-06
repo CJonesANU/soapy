@@ -13,7 +13,7 @@ import datetime
 
 
 class SimulationActiveObject(threading.Thread):
-    def __init__(self, name, sim, args=None):
+    def __init__(self, name: str, args=None):
         threading.Thread.__init__(self)
         self.name = name
         self.args = args
@@ -25,39 +25,98 @@ class SimulationActiveObject(threading.Thread):
         sim = soapy.Sim(path)
         sim.config.sim.verbosity = 0
 
+        # Programatically change attributes
+        for key, value in self.args.items():
+            setattr(sim.config.tte, key, value)
+
         dateAndTimeString = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-        simName = dateAndTimeString + "_TelVarFSMResponse"
+        simName = dateAndTimeString +"_"+ self.name 
         sim.config.sim.simName = simName
         sim.aoinit()
-        sim.makeIMat(forceNew=True)
+        sim.makeIMat(forceNew=False) # Stops them from trying to use the same file
         sim.aoloop()
-
-        self.result = sim.longStrehl[-1][-1]
+        self.result = sim
 
         print("Exiting " + self.name)
-
+    
+    def processResults(self):
+        measurements = {"stdTT": np.std(self.result.allDmCommands), 
+                        "maxTT": np.max(np.abs(self.result.allDmCommands)),
+                        "stdWfs": np.std(self.result.slopes), 
+                        "maxWfs": np.max(np.abs(self.result.slopes)),
+                        "instStrehl": np.mean(self.result.instStrehl),
+                        "longStrehl": self.result.longStrehl[-1][-1],
+                        "encircledArea": aotools.image_processing.psf.encircled_energy(self.result.sciImgs[0])
+                        }
+        return measurements
+                        
     def get_result(self):
         return self.result
 
-if __name__ == "__main__":
-    nObjects = 5
+
+
+
+def main():
+    nObjects = 12
     activeObjects = []
-    for n in range(nObjects):
-        activeObjects.append(SimulationActiveObject("Thread-" + str(n), soapy.Sim))
-        # time.sleep(2) # Wait one seocond before starting the next thread
-
-    # Start all threads without waitign for them to finish
-    for activeObject in activeObjects:
-        activeObject.start()
-        time.sleep(2)
-
- 
+    telVar = "telVar"
+    # List of variances to use
+    vStart, vEnd, vSteps = 0, 150, nObjects
+    variances = np.linspace(vStart, vEnd, vSteps)
     
-    # # wait one second
-    # time.sleep(1)
+    fStart, fEnd, fSteps = 1, 120, 15
+    frequencies = np.linspace(fStart, fEnd, fSteps)
 
-    for activeObject in activeObjects:
-        activeObject.join()
+    longStrehl = np.zeros((fSteps,nObjects))
+    maxTT      = np.zeros((fSteps,nObjects))
+    Radii      = np.zeros((fSteps,nObjects))
+    maxSlopes  = np.zeros((fSteps,nObjects))
 
-    for activeObject in activeObjects:
-        print(activeObject.get_result())
+    for i,f in enumerate(frequencies):
+        # Create a list of active objectso
+        print("=====================================")
+        print("Starting frequency: ", f)
+        print("=====================================")
+        activeObjects = []
+        for j,v in enumerate(variances):
+            activeObjects.append(SimulationActiveObject("Thread-" + str(j), {"telVar": v, "telFreq": f}) )
+        # Start the threads
+        for activeObject in activeObjects:
+            activeObject.start()
+        # Wait for all threads to complete
+        for activeObject in activeObjects:
+            activeObject.join()
+        # Get the results
+        for j,activeObject in enumerate(activeObjects):
+            measurements = activeObject.processResults()
+            longStrehl[i,j] = (measurements["longStrehl"])
+            maxTT[i,j] = (measurements["maxTT"])
+            Radii[i,j] = (measurements["encircledArea"])
+            maxSlopes[i,j] = (measurements["maxWfs"])
+
+    # Plot the results on imshow
+    fig, ax = plt.subplots(1,4)
+    ax[0].imshow(longStrehl)
+    ax[0].set_title("Long Strehl")
+    ax[0].set_xlabel("Tel Var")
+    ax[0].set_ylabel("Tel Freq")
+
+    ax[1].imshow(Radii)
+    ax[1].set_title("Encircled Energy")
+
+    ax[2].imshow(maxTT)
+    ax[2].set_title("Max TT")
+
+    ax[3].imshow(maxSlopes)
+    ax[3].set_title("Max Slopes")
+
+    # fig.colorbar(ax[0].imshow(longStrehl), ax=ax[0])
+    # fig.colorbar(ax[1].imshow(maxTT), ax=ax[1])
+    # fig.colorbar(ax[2].imshow(Radii), ax=ax[2])
+    
+    plt.show()
+
+
+
+if __name__ == "__main__":
+    main()

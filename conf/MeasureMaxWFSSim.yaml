@@ -3,17 +3,17 @@ pupilSize: 128
 nGS: 1
 nDM: 1
 nSci: 1
-nIters: 350
+nIters: 750
 loopTime: 0.001
-threads: 8
+threads: 1
 
 verbosity: 2
 
-saveCMat: True
+saveCMat: False
 saveSlopes: True
-saveDmCommands:   True
+saveDmCommands: True 
 saveLgsPsf: False
-saveSciPsf: True
+saveSciPsf: False
 saveStrehl: True  
 
 
@@ -46,6 +46,8 @@ DM:
     type: TT
     closed: True
     iMatValue: 0.25
+    maxStroke: 5
+    
 
 Reconstructor:
   type: MVM

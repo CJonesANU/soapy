@@ -41,10 +41,10 @@ sim.config.sim.simName = simName
 
 
 # Set the verbosity to 0
-sim.config.sim.verbosity = 0
+# sim.config.sim.verbosity = 0
 
 # List of variances to use
-vStart, vEnd, vSteps = 0, 300, 15
+vStart, vEnd, vSteps = 0, 150, 15
 variances = np.linspace(vStart, vEnd, vSteps)
 
 for i,v in enumerate(variances):

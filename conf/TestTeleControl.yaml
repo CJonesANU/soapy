@@ -3,18 +3,18 @@ pupilSize: 128
 nGS: 1
 nDM: 1
 nSci: 1
-nIters: 700
+nIters: 750
 loopTime: 0.001
-threads: 8
+threads: 1
 
 verbosity: 2
 
 saveCMat: False
-saveSlopes: False
-saveDmCommands: False 
+saveSlopes: True
+saveDmCommands: True 
 saveLgsPsf: False
 saveSciPsf: False
-saveStrehl: False  
+saveStrehl: True  
 
 
 Atmosphere:
@@ -46,6 +46,7 @@ DM:
     type: TT
     closed: True
     iMatValue: 0.25
+    maxStroke: 5
     
 
 Reconstructor:
@@ -65,5 +66,11 @@ TTError:
   telFreq: 15
   fsmVar: 0
   fsmFreq: 100
-  transmitVar: 1
+  transmitVar: 0
   transmitFreq: 100
+
+TelescopeControl:
+  type: simple
+  controlFreq: 100
+  range: 10
+  slewRate: 20

@@ -86,7 +86,7 @@ except ImportError:
 import aotools
 
 #sim imports
-from . import atmosphere, logger, wfs, DM, reconstruction, scienceinstrument, confParse, interp, TipTiltError
+from . import atmosphere, logger, wfs, DM, reconstruction, scienceinstrument, confParse, interp, TipTiltError, TelescopeControl
 
 import shutil
 
@@ -256,6 +256,14 @@ class Sim(object):
 
             logger.info("DM %d: %d active actuators"%(dm,self.dms[dm].n_acts))
         logger.info("%d total DM Actuators"%self.config.sim.totalActs)
+
+        # # Init Telescope COntroller
+        # logger.info("Initialising Telescope Controller...")
+
+        # telCon_lib = importlib.import_module(self.config.telCon.loadModule)
+        # # print(TelescopeControl.telescopeController)
+        # telConObj = getattr(telCon_lib, self.config.telCon.type)
+        # self.telCon = telConObj(self.config)
 
 
         # Init Reconstructor
@@ -597,8 +605,8 @@ class Sim(object):
         # Save Data
         i = self.iters % self.config.sim.nIters # If sim is run continuously in loop, overwrite oldest data in buffer
         self.storeData(i)
-
-        self.printOutput(self.iters, strehl=True)
+        if self.config.sim.verbosity:
+            self.printOutput(self.iters, strehl=True)
 
         self.addToGuiQueue()
 
