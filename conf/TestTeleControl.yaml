@@ -69,16 +69,16 @@ TTError:
   transmitVar: 0
   transmitFreq: 100
 
-TelescopeControl:
-  type: telescopePidController
-  controlFreq: 100
-  Kp: 0.1
-  Ki: 0.01
-  Kd: 0.01
-
-
 # TelescopeControl:
-#   type: telescopeSimpleController
+#   type: telescopePidController
 #   controlFreq: 100
-#   range: 10
-#   slewRate: 20
+#   Kp: 0.1
+#   Ki: 0.01
+#   Kd: 0.01
+
+
+TelescopeControl:
+  type: telescopeSimpleController
+  controlFreq: 100
+  range: 10
+  slewRate: 20

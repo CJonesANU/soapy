@@ -554,6 +554,18 @@ class Sim(object):
 
         self.Tsci +=time.time()-t
 
+    def runTelCon(self):
+        """
+        Runs the telescope controller
+
+        Calculates the next position of the telescope using the telescope controller
+        """
+        pos = self.telCon.update(self.slopes)
+        Z1,Z2 = self.ZernikeModes[1:3]
+        Tip,Tilt = pos
+        telTT = Tip*Z1+ Tilt*Z2
+        return telTT
+
 
     def loopFrame(self):
         """
@@ -563,6 +575,9 @@ class Sim(object):
         """
         # Get next phase screens
         t = time.time()
+
+        telPos = self.runTelCon()
+
         Z1,Z2 = self.ZernikeModes[1:3]
         Tip,Tilt = self.tte.updateTel() # TODO: Should this take t as an argument so it is synchronised with the rest of the loop?
         telTT = Tip*Z1+ Tilt*Z2
@@ -570,6 +585,8 @@ class Sim(object):
         transmitTT = Tip*Z1+ Tilt*Z2
 
         self.scrns = self.atmos.moveScrns() 
+        self.scrns[0] += telPos
+        
         self.scrns[0] += telTT 
         self.scrns[-1] += transmitTT
         self.Tatmos += time.time()-t

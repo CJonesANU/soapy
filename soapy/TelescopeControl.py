@@ -40,6 +40,8 @@ class telescopeController(object):
         # print(self.soapyConfig.telCon)L
         self.controlFreq = self.soapyConfig.telCon.controlFreq
 
+        self.dt = self.soapyConfig.sim.loopTime
+        self.Pos = np.array((0,0))
         self.error = np.array((0,0))
         self.period = 1./self.controlFreq
         self.timeset = time.time()
@@ -52,7 +54,7 @@ class telescopeController(object):
         update = delta > self.period
         return update
     
-    def slewRate(self, error):
+    def calcSlewRate(self, error):
         """
         This function should be overwritten by the child class
         """
@@ -61,9 +63,12 @@ class telescopeController(object):
     def update(self, error):
         if self.checkTime():
             self.timeSet = time.time()
-            return self.slewRate(error)
+            self.calcSlewRate(error)
+            self.Pos += self.slewRate*self.dt
+            return self.Pos
         else:
-            return self.slewRate
+            self.Pos += self.slewRate*self.dt
+            return self.Pos
 
 
 class telescopeSimpleController(telescopeController):
@@ -83,7 +88,7 @@ class telescopeSimpleController(telescopeController):
                 flags[i] = 0
         return np.array(flags)
     
-    def slewRate(self,error):
+    def calcSlewRate(self,error):
         self.slewRate = self.inRange(error)*self.slewRateConstant
         return self.slewRate
 
@@ -108,7 +113,7 @@ class telescopePidController(telescopeController):
         self.integral =  np.array((0,0))
     
 
-    def slewRate(self, error: np.ndarray):
+    def calcSlewRate(self, error: np.ndarray):
         
         self.P = self.Kp*error
         
