@@ -35,7 +35,6 @@ import numpy as np
 
 class telescopeController(object):
     def __init__(self,soapyConfig):
-        print("INIT BASE")
         self.soapyConfig = soapyConfig
         # print("TEL CONTROL CONFIG")
         # print(self.soapyConfig.telCon)L
@@ -69,7 +68,6 @@ class telescopeController(object):
 
 class telescopeSimpleController(telescopeController):
     def __init__(self, soapyConfig) -> None:
-        print("INIT SIMPLE")
         self.soapyConfig = soapyConfig
         self.range = self.soapyConfig.telCon.range
         self.slewRateConstant = self.soapyConfig.telCon.slewRate
@@ -96,12 +94,11 @@ class telescopePidController(telescopeController):
 
 
     def __init__(self, soapyConfig):
-        print("INIT PID")
 
+        self.soapyConfig = soapyConfig
         self.Kp = self.soapyConfig.telCon.Kp
         self.Ki = self.soapyConfig.telCon.Ki
         self.Kd = self.soapyConfig.telCon.Kd
-        
 
         # Calculated attributes
         self.P = (0,0)

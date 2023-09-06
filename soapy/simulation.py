@@ -259,12 +259,21 @@ class Sim(object):
 
         # # Init Telescope COntroller
         logger.info("Initialising Telescope Controller...")
+        # WORKS TO IMPORT BASE CLASS
+        # self.telCon = TelescopeControl.telescopeController(self.config)
 
-        self.telCon = TelescopeControl.telescopeController(self.config)
-        # telCon_lib = importlib.import_module(self.config.telCon.loadModule)
-        # # print(TelescopeControl.telescopeController)
-        # telConObj = getattr(telCon_lib, self.config.telCon.type)
-        # self.telCon = telConObj(self.config)
+        # Import child class
+        try:
+            if self.config.telCon.loadModule:
+                telCon_lib = importlib.import_module(self.config.telCon.loadModule)
+            else:
+                telCon_lib = TelescopeControl
+            telConObj = getattr(telCon_lib, self.config.telCon.type)
+        except AttributeError:
+            raise confParse.ConfigurationError("No Telescope Controller of type {} found".format(self.config.telCon.type))
+        self.telCon = telConObj(self.config)
+        
+
 
 
         # Init Reconstructor

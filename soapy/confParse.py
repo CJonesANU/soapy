@@ -951,21 +951,14 @@ class telControlConfig(ConfigObj):
 
 
     requiredParams = [  "type",
-                        "controlFreq",
-                        "range",
-                        "slewRate"
+                        "controlFreq"
                         ]
-    optionalParams = [  ("pxlScale", None),
-                        ("FOV", None),
-                        ("type", "PSF"),
-                        ("fftOversamp", 2),
-                        ("fftwFlag", "FFTW_MEASURE"),
-                        ("fftwThreads", 1),
-                        ("instStrehlWithTT", False),
-                        ("height", 0),
-                        ("propagationMode", "Geometric"),
-                        ("loadModule", None),
-                        ("propagationDir", "down")
+    optionalParams = [  ("range", 0),
+                        ("slewRate", 0),
+                        ("Kp", 0),
+                        ("Ki", 0),
+                        ("Kd", 0),
+                        ("loadModule", None)
                         ]
 
     calculatedParams = [

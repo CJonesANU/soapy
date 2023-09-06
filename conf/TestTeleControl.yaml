@@ -1,11 +1,11 @@
-simName: OCGS_SimTTError
+simName: ./Data/OCGS_SimTTError
 pupilSize: 128
 nGS: 1
 nDM: 1
 nSci: 1
 nIters: 750
 loopTime: 0.001
-threads: 1
+threads: 8
 
 verbosity: 2
 
@@ -70,7 +70,15 @@ TTError:
   transmitFreq: 100
 
 TelescopeControl:
-  type: simple
+  type: telescopePidController
   controlFreq: 100
-  range: 10
-  slewRate: 20
+  Kp: 0.1
+  Ki: 0.01
+  Kd: 0.01
+
+
+# TelescopeControl:
+#   type: telescopeSimpleController
+#   controlFreq: 100
+#   range: 10
+#   slewRate: 20

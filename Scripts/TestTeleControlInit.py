@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 
 path = "/home/cameron/Documents/projects/soapy_TTEModule/soapy/conf/TestTeleControl.yaml"
 sim = soapy.Sim(path)
-sim.config.sim.verbosity = 3
+sim.config.sim.verbosity = 1
 
 
 print("STARTING AOINIT")
@@ -12,7 +12,7 @@ print("STARTING AOINIT")
 print("=========================\n"*3)
 print(sim.config.telCon.type)
 print("=========================\n"*3)
-
+sim.config.sim.nIters = 100
 
 sim.aoinit()
 sim.makeIMat()
