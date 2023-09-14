@@ -451,15 +451,7 @@ class Sim(object):
         t_wfs = time.time()
         if scrns is not None:
             self.scrns=scrns
-        if wfsList==None:
-            wfsList=range(self.config.sim.nGS)
-
-        slopesSize = 0
-        for nwfs in wfsList:
-            slopesSize+=self.wfss[nwfs].n_measurements
-        slopes = numpy.zeros( (slopesSize) )
-
-        wfsProcs = []
+        if wfsList==None:TelPos[i] = self.telPos
         wfsQueues = []
         s = 0
         for proc in xrange(len(wfsList)):
@@ -560,11 +552,13 @@ class Sim(object):
 
         Calculates the next position of the telescope using the telescope controller
         """
-        pos = self.telCon.update(self.slopes)
-        Z1,Z2 = self.ZernikeModes[1:3]
-        Tip,Tilt = pos
-        telTT = Tip*Z1+ Tilt*Z2
-        return telTT
+        pos = self.telCon.update(self.slopes+self.dmCommands)
+        slewRate = self.telCon.slewRate
+        self.allSlewrates.append(slewRate)
+        # Z1,Z2 = self.ZernikeModes[1:3]
+        # Tip,Tilt = pos
+        # telTT = Tip*Z1+ Tilt*Z2
+        return pos
 
 
     def loopFrame(self):
@@ -576,18 +570,18 @@ class Sim(object):
         # Get next phase screens
         t = time.time()
 
-        telPos = self.runTelCon()
-
+ 
         Z1,Z2 = self.ZernikeModes[1:3]
-        Tip,Tilt = self.tte.updateTel() # TODO: Should this take t as an argument so it is synchronised with the rest of the loop?
-        telTT = Tip*Z1+ Tilt*Z2
+        # Tip,Tilt = self.tte.updateTel() # TODO: Should this take t as an argument so it is synchronised with the rest of the loop?
+        # telTT = Tip*Z1+ Tilt*Z2
         Tip,Tilt = self.tte.updateTransmit()
         transmitTT = Tip*Z1+ Tilt*Z2
 
         self.scrns = self.atmos.moveScrns() 
-        self.scrns[0] += telPos
-        
-        self.scrns[0] += telTT 
+
+        self.telPos = self.runTelCon()
+        self.scrns[0] += self.telPos[0]*Z2+ self.telPos[1]*Z1
+        # self.scrns[0] += telTT 
         self.scrns[-1] += transmitTT
         self.Tatmos += time.time()-t
 
@@ -725,8 +719,8 @@ class Sim(object):
 
         if self.config.sim.saveDmCommands:
             self.allDmCommands[:] = 0
-
-    
+        #TODO: Config sim.saveTelPos
+        self.allTelPos[:] = 0    
         self.recon.reset()
 
         if self.config.sim.nSci > 0:
@@ -823,7 +817,9 @@ class Sim(object):
                     (self.config.sim.nIters, self.config.sim.totalWfsData) )
         else:
             self.allSlopes = None
-
+        self.allTelPos = numpy.zeros(
+                (self.config.sim.nIters, 2))
+        self.allSlewrates = []
         #Init DM Command Data saving
         if self.config.sim.saveDmCommands:
             ttActs = 0
@@ -883,6 +879,9 @@ class Sim(object):
         if self.config.sim.saveDmCommands:
             act=0
             self.allDmCommands[i,act:] = self.dmCommands
+
+        #TODO: Config sim.saveTelPos
+        self.allTelPos[i,:] = self.telPos
 
         #Quick bodge to save lgs psfs as images
         if self.config.sim.saveLgsPsf:
@@ -957,7 +956,7 @@ class Sim(object):
                         self.path+"/dmCommands.fits",
                         self.allDmCommands, header=self.config.sim.saveHeader,
                         overwrite=True)
-
+            #Todo: Config sim.saveTelPos
             if self.config.sim.saveLgsPsf:
                 fits.writeto(
                         self.path+"/lgsPsf.fits", self.lgsPsfs,

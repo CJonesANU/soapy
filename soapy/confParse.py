@@ -912,8 +912,9 @@ class TTErrorConfig(ConfigObj):
     """
 
 
-    requiredParams = ["telVar",
-                      "telFreq",
+    requiredParams = [
+                    #   "telVar",
+                    #   "telFreq",
                       "fsmVar",
                       "fsmFreq",
                       "transmitVar",
@@ -951,6 +952,7 @@ class telControlConfig(ConfigObj):
 
 
     requiredParams = [  "type",
+                        "jitter",
                         "controlFreq"
                         ]
     optionalParams = [  ("range", 0),
@@ -958,6 +960,8 @@ class telControlConfig(ConfigObj):
                         ("Kp", 0),
                         ("Ki", 0),
                         ("Kd", 0),
+                        ("k1", 0),
+                        ("k2", 0),
                         ("loadModule", None)
                         ]
 

@@ -1,11 +1,11 @@
 simName: ./Data/OCGS_SimTTError
-pupilSize: 128
+pupilSize: 100
 nGS: 1
 nDM: 1
 nSci: 1
-nIters: 250
-loopTime: 0.05
-threads: 12
+nIters: 500
+loopTime: 0.01
+threads: 10
 
 verbosity: 2
 
@@ -13,20 +13,19 @@ saveCMat: False
 saveSlopes: True
 saveDmCommands: True 
 saveLgsPsf: False
-saveSciPsf: False
+saveSciPsf: True
 saveStrehl: True  
 
 
 Atmosphere:
   scrnNo: 3
-  scrnNames: [./conf/Tip10Tilt-10.fits, ./conf/scrn0.fits,./conf/BlankScreen.fits]
+  scrnNames: [./conf/Size256Scrns.fits, ./conf/Size256Scrns/1.fits ,./conf/Size256Scrns.fits]
   scrnHeights: [0,200,200000]
   scrnStrengths: [1.,1.,1.]
   windDirs: [0,45,0]
-  windSpeeds: [0,0,0]
-  r0: 1
+  windSpeeds: [0,45,0]
+  r0: 0.1
   L0: [10,10,10]
-
 
 Telescope:
   telDiam: 0.7
@@ -46,7 +45,7 @@ DM:
     type: TT
     closed: True
     iMatValue: 0.25
-    maxStroke: 0.001
+    # maxStroke: 
     
 
 Reconstructor:
@@ -62,25 +61,28 @@ Science:
     pxls: 640
 
 TTError:
-  telVar: 0
-  telFreq: 15
+  # telVar: 50
+  # # telVar: 0
+  # telFreq: 20
   fsmVar: 0
   fsmFreq: 100
   transmitVar: 0
   transmitFreq: 100
 
-TelescopeControl:
-  type: telescopePidController
-  controlFreq: 20
-  Kp: 0.0
-  Ki: 000.0
-  Kd: 000.0
-
 # TelescopeControl:
-#   type: telescopeLeakyIntegratorController
-#   controlFreq: 1000
-#   kl: 0.9
-#   ke: 1
+#   type: telescopePidController
+#   controlFreq: 20
+#   Kp: 0.0
+#   Ki: 000.0
+#   Kd: 000.0
+
+TelescopeControl:
+  type: telescopeLeakyIntegratorController
+  controlFreq: 10
+  jitter: 0
+  k1: 1
+  k2: 0.0
+
 
 # TelescopeControl:
 #   type: telescopeSimpleController
